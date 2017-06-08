@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import pygame, sys,  math, os
+import pygame, sys,  math, os, cubeObject
+
+cube1 = cubeObject.Cube()
+cube2 = cubeObject.Cube()
+
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" 
 
@@ -89,23 +93,25 @@ while True:
 
 
     vert_list = []; screen_cords = []
-    for x,y,z in verts:
-        x-=cam.pos[0]
-        y-=cam.pos[1]
-        z-=cam.pos[2]
-
-        z+=0
-
-        x,z = rotate2d((x,z),cam.rot[1])
-        y,z = rotate2d((y,z),cam.rot[0])
-        
-        vert_list += [(x,y,z)]
-
-        f = fov/z 
-        x,y = x*f,y*f
-        screen_cords+=[(cx+int(x),cy+int(y))]
-        
-        
+    
+    for obj in [cube2.dimensions(0,5,0)]:
+        for x,y,z in obj:
+            x-=cam.pos[0]
+            y-=cam.pos[1]
+            z-=cam.pos[2]
+    
+            z+=0
+    
+            x,z = rotate2d((x,z),cam.rot[1])
+            y,z = rotate2d((y,z),cam.rot[0])
+            
+            vert_list += [(x,y,z)]
+    
+            f = fov/z 
+            x,y = x*f,y*f
+            screen_cords+=[(cx+int(x),cy+int(y))]
+            
+            
 
 
     face_list = []; face_color = []; depth = []
@@ -119,7 +125,7 @@ while True:
             if vert_list[i][2]>0: on_screen  = True; break
         
         if on_screen:
-            coords = [screen_cords[i] for i in  face]
+            coords = [screen_cords[i] for i in face]
             face_list += [coords]
             face_color += [colors[f]]
 
