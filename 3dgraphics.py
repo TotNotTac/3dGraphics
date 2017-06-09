@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+u = 0
 
 import pygame, sys,  math, os, cubeObject
 
 cube1 = cubeObject.Cube()
 cube2 = cubeObject.Cube()
 
+objects = [cube1.dimensions(0,0,0),cube1.dimensions(0,5,0)]
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" 
 
 colors = (255,0,0),(255,128,0),(255,255,0),(255,255,255),(0,0,255),(0,255,0)
+
 
 
 def rotate2d(pos,rad): x,y=pos; s,c =math.sin(rad),math.cos(rad); return x*c-y*s,y*c+x*s
@@ -16,10 +19,10 @@ def rotate2d(pos,rad): x,y=pos; s,c =math.sin(rad),math.cos(rad); return x*c-y*s
 def minimapXZ():#function for drawing the xz plane minimap
     centrex = 100
     centrey = 100
-    
+        
 #    pygame.draw.polygon(screen,(255,255,255),[(0,0),(0,50),(50,-50),(0,-50)])
     
-    print(cam.pos[0],cam.pos[2])
+#    print(cam.pos[0],cam.pos[2])
     
     pygame.draw.circle(screen, (255,255,255),(int(centrex),int(centrey)),2)#draws player on minimap
 
@@ -80,6 +83,7 @@ pygame.mouse.set_visible(0); pygame.event.set_grab(1)
 
 while True:
     
+    
     dt = clock.tick()/1000
 
     for event in  pygame.event.get():
@@ -90,12 +94,15 @@ while True:
         
     screen.fill((0,0,0))
 
+       
 
 
     vert_list = []; screen_cords = []
-    
-    for obj in [cube2.dimensions(0,5,0)]:
+    face_list = []; face_color = []; depth = []
+    for obj in objects:
+        
         for x,y,z in obj:
+        
             x-=cam.pos[0]
             y-=cam.pos[1]
             z-=cam.pos[2]
@@ -112,52 +119,29 @@ while True:
             screen_cords+=[(cx+int(x),cy+int(y))]
             
             
-
-
-    face_list = []; face_color = []; depth = []
-
-    for f in range(len(faces)):
-        
-        face = faces[f]
-        
-        on_screen = False
-        for  i  in face:
-            if vert_list[i][2]>0: on_screen  = True; break
-        
-        if on_screen:
-            coords = [screen_cords[i] for i in face]
-            face_list += [coords]
-            face_color += [colors[f]]
-
-            depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
-
-    order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
     
+        for f in range(len(faces)):
+            
+            face = faces[f]
+            
+            on_screen = False
+            for  i  in face:
+                if vert_list[i][2]>0: on_screen  = True; break
+            
+            if on_screen:
+                coords = [screen_cords[i] for i in face]
+                face_list += [coords]
+                face_color += [colors[f]]
+    
+            depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
+    
+    order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
+        
     for i in order:
         pygame.draw.polygon(screen,face_color[i],face_list[i])
 
-#    for edge in edges:
-#        
-#        points = []
-#        for x,y,z in (verts[edge[0]],verts[edge[1]]):
-#            x-=cam.pos[0]
-#            y-=cam.pos[1]
-#            z-=cam.pos[2]
-#
-#            x,z = rotate2d((x,z),cam.rot[1])
-#            y,z = rotate2d((y,z),cam.rot[0])
-#
-#            f = fov/z
-#            x,y = x*f,y*f
-#            points+=[(cx+int(x),cy+int(y))]
-#        pygame.draw.line(screen, (255,255,255),points[0],points[1],1)
-
-        
-    #drawing the minimap    
+        #drawing the minimap    
     minimapXZ()
-
-
-        
         
     pygame.display.flip()
     
