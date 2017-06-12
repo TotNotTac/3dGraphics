@@ -6,9 +6,9 @@ import pygame, sys,  math, os, cubeObject
 cube1 = cubeObject.Cube()
 cube2 = cubeObject.Cube()
 
-objects = [cube1.dimensions(0,0,0),cube1.dimensions(0,5,0)]
+objects = [cube1.dimensions(0,0,0),cube1.dimensions(8,0,10)]
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" 
+os.environ['SDL_VIDEO_WINDOW_POS'] = "30,50" 
 
 colors = (255,0,0),(255,128,0),(255,255,0),(255,255,255),(0,0,255),(0,255,0)
 
@@ -29,8 +29,9 @@ def minimapXZ():#function for drawing the xz plane minimap
     pygame.draw.line(screen, (255,255,255),(int(centrex),int(centrey)),(centrex+math.cos(cam.rot[1]+math.pi*0.5)*10,centrey + math.sin(cam.rot[1]+math.pi*0.5)*10),1)  
     
     if cam.pos[0] < 50 and cam.pos[2] > -50:
-        for x,y,z in verts:#draws all the verts
-            pygame.draw.circle(screen, (200,200,200),(int(x+centrex+cam.pos[0]),int(z+centrey-cam.pos[2])),1)
+        for obj in objects:
+            for x,y,z in obj:#draws all the verts
+                pygame.draw.circle(screen, (200,200,200),(int(x+centrex+cam.pos[0]),int(z+centrey-cam.pos[2])),1)
 
 class Cam: 
     def __init__(self,pos=(0,0,0),rot=(0,0)):
@@ -68,8 +69,8 @@ w,h = 600,600; cx,cy = w//2,h//2
 screen = pygame.display.set_mode((w,h))
 clock = pygame.time.Clock()
 
-verts = (-1,-1,-1),(1,-1,-1),(1,1,-1),(-1,1,-1),(-1,-1,1),(1,-1,1),(1,1,1),(-1,1,1)
-edges = (0,1),(1,2),(2,3),(3,0),(4,5),(5,6),(6,7),(7,4),(0,4),(1,5),(2,6),(3,7)
+#verts = (-1,-1,-1),(1,-1,-1),(1,1,-1),(-1,1,-1),(-1,-1,1),(1,-1,1),(1,1,1),(-1,1,1)
+#edges = (0,1),(1,2),(2,3),(3,0),(4,5),(5,6),(6,7),(7,4),(0,4),(1,5),(2,6),(3,7)
 
 faces = (0,1,2,3),(4,5,6,7),(0,1,5,4),(2,3,7,6),(0,3,7,4),(1,2,6,5),
 
@@ -94,13 +95,9 @@ while True:
         
     screen.fill((0,0,0))
 
-       
-
-
-    vert_list = []; screen_cords = []
-    face_list = []; face_color = []; depth = []
     for obj in objects:
-        
+        vert_list = []; screen_cords = []
+        face_list = []; face_color = []; depth = []        
         for x,y,z in obj:
         
             x-=cam.pos[0]
@@ -126,19 +123,20 @@ while True:
             
             on_screen = False
             for  i  in face:
-                if vert_list[i][2]>0: on_screen  = True; break
+                if vert_list[i][2]>0: on_screen = True; break
             
             if on_screen:
                 coords = [screen_cords[i] for i in face]
                 face_list += [coords]
                 face_color += [colors[f]]
     
-            depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
-    
-    order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
+                depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
+        order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
         
-    for i in order:
-        pygame.draw.polygon(screen,face_color[i],face_list[i])
+        for i in order:
+            pygame.draw.polygon(screen,face_color[i],face_list[i])
+    
+    
 
         #drawing the minimap    
     minimapXZ()
