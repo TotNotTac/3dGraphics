@@ -10,6 +10,10 @@ class Cube:
     def dimensions(self,posx,posy,posz):
         
         verts = (-1+posx,-1+posy,-1+posz),(1+posx,-1+posy,-1+posz),(1+posx,1+posy,-1+posz),(-1+posx,1+posy,-1+posz),(-1+posx,-1+posy,1+posz),(1+posx,-1+posy,1+posz),(1+posx,1+posy,1+posz),(-1+posx,1+posy,1+posz)
-
+        self.pos = [posx,posy,posz]       
         return verts
+ 
+
+
+
         

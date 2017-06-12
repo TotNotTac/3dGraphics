@@ -6,13 +6,14 @@ import pygame, sys,  math, os, cubeObject
 cube1 = cubeObject.Cube()
 cube2 = cubeObject.Cube()
 
-objects = [cube1.dimensions(0,0,0),cube1.dimensions(8,0,10)]
+objects = [cube1.dimensions(0,0,0),cube2.dimensions(2,0,2)]
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "30,50" 
 
 colors = (255,0,0),(255,128,0),(255,255,0),(255,255,255),(0,0,255),(0,255,0)
 
-
+print(cube1.pos)
+print(cube2.pos)
 
 def rotate2d(pos,rad): x,y=pos; s,c =math.sin(rad),math.cos(rad); return x*c-y*s,y*c+x*s
 
@@ -82,8 +83,12 @@ pygame.event.get; pygame.mouse.get_rel()
 pygame.mouse.set_visible(0); pygame.event.set_grab(1)
 
 
+vert_list = []; screen_cords = []
+face_list = []; face_color = []; depth = []
+
 while True:
     
+#    print(cam.pos)
     
     dt = clock.tick()/1000
 
@@ -94,10 +99,17 @@ while True:
         cam.events(event)
         
     screen.fill((0,0,0))
-
+#    
+#    renderorder = []
+#
+#    for p in [cube1,cube2]:
+#        distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(p.pos, cam.pos)]))
+#        
+        
+        
     for obj in objects:
-        vert_list = []; screen_cords = []
-        face_list = []; face_color = []; depth = []        
+#        vert_list = []; screen_cords = []
+#        face_list = []; face_color = []; depth = []        
         for x,y,z in obj:
         
             x-=cam.pos[0]
@@ -131,11 +143,13 @@ while True:
                 face_color += [colors[f]]
     
                 depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
-        order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
+            order = sorted(range(len(face_list)),key=lambda i: depth[i], reverse=1)
         
-        for i in order:
-            pygame.draw.polygon(screen,face_color[i],face_list[i])
-    
+            for i in order:
+                pygame.draw.polygon(screen,face_color[i],face_list[i])
+        
+        vert_list = []; screen_cords = []; coords = []
+        face_list = []; face_color = []; depth = []
     
 
         #drawing the minimap    
