@@ -15,6 +15,9 @@ colors = (255,0,0),(255,128,0),(255,255,0),(255,255,255),(0,0,255),(0,255,0)
 print(cube1.pos)
 print(cube2.pos)
 
+def getKey(item):
+    return item[0]
+
 def rotate2d(pos,rad): x,y=pos; s,c =math.sin(rad),math.cos(rad); return x*c-y*s,y*c+x*s
 
 def minimapXZ():#function for drawing the xz plane minimap
@@ -99,15 +102,22 @@ while True:
         cam.events(event)
         
     screen.fill((0,0,0))
-#    
-#    renderorder = []
-#
-#    for p in [cube1,cube2]:
-#        distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(p.pos, cam.pos)]))
-#        
+    
+    renderorder = []
+    
+    cubes = [cube1,cube2]
+
+    for p in range(len(cubes)):
+        distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(cubes[p].pos, cam.pos)]))
+        renderorder.append([distance,p])
         
+    renderorder = sorted(renderorder, key=getKey, reverse=1)
+
+    ordered = []
+    for e in renderorder:
+        ordered.append(objects[e[1]])
         
-    for obj in objects:
+    for obj in ordered:
 #        vert_list = []; screen_cords = []
 #        face_list = []; face_color = []; depth = []        
         for x,y,z in obj:
