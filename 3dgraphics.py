@@ -5,8 +5,9 @@ import pygame, sys,  math, os, cubeObject
 
 cube1 = cubeObject.Cube()
 cube2 = cubeObject.Cube()
+cube3 = cubeObject.Cube()
 
-objects = [cube1.dimensions(0,0,0),cube2.dimensions(2,0,2)]
+objects = [cube1.dimensions(0,0,0),cube2.dimensions(2,0,2),cube3.dimensions(2,0,0)]
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "30,50" 
 
@@ -105,7 +106,7 @@ while True:
     
     renderorder = []
     
-    cubes = [cube1,cube2]
+    cubes = [cube1,cube2,cube3]
 
     for p in range(len(cubes)):
         distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(cubes[p].pos, cam.pos)]))
